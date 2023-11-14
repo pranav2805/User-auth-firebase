@@ -22,6 +22,29 @@ const AuthForm = () => {
     const enteredPassword = passwordInputRef.current.value;
     setIsLoading(true);
     if (isLogin) {
+      const resp = await fetch(
+        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${API_KEY}`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            email: enteredEmail,
+            password: enteredPassword,
+            returnSecureToken: true,
+          }),
+        }
+      );
+      const data = await resp.json();
+      if (resp.ok) {
+        console.log("Token>>>", data.idToken);
+        alert("Logged in successfully");
+      } else {
+        // console.log(data);
+        let errorMessage = "Login Failed!!";
+        if (data && data.error && data.error.message) {
+          errorMessage = data.error.message;
+        }
+        alert(errorMessage);
+      }
     } else {
       const resp = await fetch(
         `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`,
@@ -34,7 +57,7 @@ const AuthForm = () => {
           }),
         }
       );
-      setIsLoading(false);
+
       if (resp.ok) {
         alert("user created successfully");
       } else {
@@ -47,6 +70,7 @@ const AuthForm = () => {
         alert(errorMessage);
       }
     }
+    setIsLoading(false);
   };
 
   return (
