@@ -1,12 +1,15 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useContext } from "react";
 
 import classes from "./AuthForm.module.css";
+import AuthContext from "../../store/auth-context";
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+
+  const authCtx = useContext(AuthContext);
 
   const switchAuthModeHandler = () => {
     setIsLogin((prevState) => !prevState);
@@ -31,11 +34,15 @@ const AuthForm = () => {
             password: enteredPassword,
             returnSecureToken: true,
           }),
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
       const data = await resp.json();
       if (resp.ok) {
-        console.log("Token>>>", data.idToken);
+        // console.log("Token>>>", data.idToken);
+        authCtx.login(data.idToken);
         alert("Logged in successfully");
       } else {
         // console.log(data);
@@ -55,6 +62,9 @@ const AuthForm = () => {
             password: enteredPassword,
             returnSecureToken: true,
           }),
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
 
@@ -71,6 +81,8 @@ const AuthForm = () => {
       }
     }
     setIsLoading(false);
+    emailInputRef.current.value = "";
+    passwordInputRef.current.value = "";
   };
 
   return (
