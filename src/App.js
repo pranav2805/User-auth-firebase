@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 
 import Layout from "./components/Layout/Layout";
@@ -9,6 +9,15 @@ import AuthContext from "./store/auth-context";
 
 function App() {
   const authCtx = useContext(AuthContext);
+
+  useEffect(() => {
+    const id = setTimeout(() => {
+      authCtx.logout();
+    }, 60000);
+
+    return () => clearTimeout(id);
+  }, []);
+
   return (
     <Layout>
       <Switch>
